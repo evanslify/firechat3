@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+    <div id='messages'></div>
+        <script id='template' type='text/ractive'>
+            {{#list}}
+            <p>{{this.id}}: {{this.message}}</p>
+            {{/list}}
+        </script>
+    <div class="chatSend">
+        <input type='text' id='nameInput' placeholder='Name' readonly>
+        <input type='text' id='messageInput' placeholder='Message'>
+        <button type="submit" id='sendButton' onClick='sendMessage()'>send</button>
+        <button id="clearButton" onclick='clearAll()'>clear All messages</button>
+        <p>
+        hit 'return' or press 'send' to send a message.
+        <br>
+        'clear' clears all messages on all clients.
+        <br>
+
+        tofix: bug - race condition between sendToFire() and displayChatMessage()
+        login message will appear on the wrong side of msgList.
+        </p>
+    </div>
+    <script src="static/js/firechat.js" type="text/javascript" charset="utf-8"></script>
+  </body>
+</html>
