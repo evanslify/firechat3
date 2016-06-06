@@ -2,6 +2,8 @@ var ractive = require('ractive');
 var firebase = require('firebase');
 var $ = require('jquery');
 var cookie = require('js-cookie');
+var Vue = require('vue');
+var moment = require('moment');
 
 var config = {
     apiKey: "AIzaSyCM6QLlRjQfkRSfG_lsi3zNS2qBGccYLhw",
@@ -12,44 +14,73 @@ var config = {
 firebase.initializeApp(config);
 var chatRef = firebase.database().ref();
 
-// global.fb = firebase;
-// global.cRef = chatRef;
-
 function generateRef(refno) {
     return firebase.database().ref(refno);
 }
 
-function getLastKey(message) {
-    chatRef.limitToLast(1).once(
-        'child_added', function(snapshot) {
-            var newRef = parseInt(snapshot.key, 10) + 1;
-            var ref = generateRef(newRef);
-            addMessage(ref, message);
-        }
-    );
+// function getLastKey(message) {
+    // chatRef.limitToLast(1).once(
+        // 'child_added', function(snapshot) {
+            // var newRef = parseInt(snapshot.key, 10) + 1;
+            // console.log('newref: ', newRef);
+            // var ref = generateRef(newRef);
+            // addMessage(ref, message);
+        // }
+    // );
+// }
+
+function addMessage(message) {
+    chatRef.push(message);
+    // ref.transaction(function (messagePos) {
+        // if (messagePos) {  // message exists
+            // console.log('collided with: ', messagePos);
+            // return; // return as fail
+        // } else {
+            // return message;
+        // }
+    // },
+    // function (error, status, snapshot) {
+        // if (!status) {
+            // console.log('error:', error);
+            // console.log('commited: ', status);
+            // var newKey = parseInt(snapshot.key, 10) + 1;
+            // var newRef = generateRef(newKey);
+        // }
+    // });
 }
 
-function addMessage(ref, message) {
-    ref.transaction(function (messagePos) {
-        console.log(messagePos);
-        if (messagePos) {  // message exists
-            console.log('fail, incrementing index');
-            var newIndex = parseInt(messagePos.key, 10) + 1;
-            var newRef = generateRef(newIndex);
-        } else {
-            console.log('success');
-            ref.set(message);
-        }
+function genMessage(message, username) {
+    var time = moment().format('YYYY/MM/DD, hh:mm:ss');
+    var msg = ({
+        message, time, username
     });
+    addMessage(msg);
 }
 
-function genMessage(message, time, username) {
-   return {
-       message, time, username
-   };
+var v = new Vue({
+  el: '#vueChat',
+  data: {
+    messages: [],
+    id: null,
+    message: null
+    },
+  methods: {
+    sendMessage: function () {
+        genMessage(this.message, this.id);
+      },
+    clearAll: function () {
+        v.id = null;
+        v.message = null;
+    }
+  }
+});
+
+function parseMessage(snapshot) {
+    return [snapshot.time, snapshot.username, snapshot.message];
 }
 
-// var msg = genMessage('testmsg', '1111', 'es');
-// getLastKey(msg);
-// global.msg = msg;
-// global.aM = addMessage;
+
+chatRef.on('child_added', function (snapshot) {
+    var msg = parseMessage(snapshot.val());
+    v.messages.push(msg);
+});
