@@ -12,41 +12,14 @@ var config = {
     storageBucket: "chatapp-53089.appspot.com",
 };
 firebase.initializeApp(config);
-var chatRef = firebase.database().ref();
+var chatRef = firebase.database().ref('messages');
 
 function generateRef(refno) {
     return firebase.database().ref(refno);
 }
 
-// function getLastKey(message) {
-    // chatRef.limitToLast(1).once(
-        // 'child_added', function(snapshot) {
-            // var newRef = parseInt(snapshot.key, 10) + 1;
-            // console.log('newref: ', newRef);
-            // var ref = generateRef(newRef);
-            // addMessage(ref, message);
-        // }
-    // );
-// }
-
 function addMessage(message) {
     chatRef.push(message);
-    // ref.transaction(function (messagePos) {
-        // if (messagePos) {  // message exists
-            // console.log('collided with: ', messagePos);
-            // return; // return as fail
-        // } else {
-            // return message;
-        // }
-    // },
-    // function (error, status, snapshot) {
-        // if (!status) {
-            // console.log('error:', error);
-            // console.log('commited: ', status);
-            // var newKey = parseInt(snapshot.key, 10) + 1;
-            // var newRef = generateRef(newKey);
-        // }
-    // });
 }
 
 function genMessage(message, username) {
