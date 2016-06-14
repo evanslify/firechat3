@@ -14,10 +14,6 @@ var config = {
 firebase.initializeApp(config);
 var chatRef = firebase.database().ref('messages');
 
-function generateRef(refno) {
-    return firebase.database().ref(refno);
-}
-
 function addMessage(message) {
     chatRef.push(message);
 }
@@ -42,12 +38,14 @@ var v = new Vue({
         genMessage(this.message, this.id);
       },
     clearAll: function () {
-        v.id = null;
-        v.message = null;
+        clearMessage();
     }
   }
 });
 
+function clearMessage() {
+    chatRef.set(null);
+}
 function parseMessage(snapshot) {
     return [snapshot.time, snapshot.username, snapshot.message];
 }

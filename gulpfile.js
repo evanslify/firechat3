@@ -10,5 +10,5 @@ gulp.task('scripts', function() {
 		  insertGlobals : true,
 		  debug : !gulp.env.production
 		}))
-		.pipe(gulp.dest('./static/js'));
+		.pipe(gulp.dest('./public/static/js'));
 });
